@@ -1,5 +1,9 @@
 package ru.yandex.practicum.filmorate;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.controller.FilmController;
@@ -9,11 +13,12 @@ import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class FilmControllerTest {
-
+    private Validator validator;
     private FilmController filmController;
     private Film film;
 
@@ -21,6 +26,8 @@ class FilmControllerTest {
     void setUp() {
         filmController = new FilmController();
         film = new Film(1L, "The Notebook", "The Notebook is a 2004 American romantic drama film directed by Nick Cassavetes", LocalDate.of(2004, 5, 20), 124L);
+        ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
+        validator = validatorFactory.getValidator();
     }
 
     @Test
@@ -31,11 +38,10 @@ class FilmControllerTest {
     }
 
     @Test
-    void shouldThrowValidationExceptionForTooOldDate() {
+    void shouldNotValidateOldReleaseDate() {
         film.setReleaseDate(LocalDate.of(1800, 1, 1));
-        ValidationException ex = assertThrows(ValidationException.class,
-                () -> filmController.addFilm(film));
-        assertEquals("Год выпуска фильма не может быть раньше 28.12.1895", ex.getMessage());
+        Set<ConstraintViolation<Film>> violations = validator.validate(film);
+        assertFalse(violations.isEmpty());
     }
 
     @Test
