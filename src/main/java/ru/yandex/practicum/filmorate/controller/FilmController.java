@@ -29,10 +29,6 @@ public class FilmController {
 
     @PostMapping
     public Film addFilm(@Valid @RequestBody Film film) {
-        if (film.getReleaseDate().isBefore(MIN_RELEASE_DATE)) {
-            throw new ValidationException("Год выпуска фильма не может быть раньше 28.12.1895");
-        }
-
         film.setId(++filmId);
         films.put(film.getId(), film);
         log.debug("Фильм {} успешно добавлен", film.getName());
@@ -41,9 +37,6 @@ public class FilmController {
 
     @PutMapping
     public Film updateFilm(@Valid @RequestBody Film film) {
-        if (film.getReleaseDate().isBefore(MIN_RELEASE_DATE)) {
-            throw new ValidationException("Год выпуска фильма не может быть раньше 28.12.1895");
-        }
 
         if (films.containsKey(film.getId())) {
             films.put(film.getId(), film);

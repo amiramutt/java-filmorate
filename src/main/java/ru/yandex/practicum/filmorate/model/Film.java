@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import ru.yandex.practicum.filmorate.annotation.ReleaseDate;
 
 import java.time.LocalDate;
 
@@ -23,6 +24,7 @@ public class Film {
     private String description;
 
     @NotNull
+    @ReleaseDate
     private LocalDate releaseDate;
 
     @Positive(message = "Продолжительность фильма не может быть отрицательной")
