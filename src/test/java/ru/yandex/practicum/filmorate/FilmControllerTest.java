@@ -1,0 +1,69 @@
+package ru.yandex.practicum.filmorate;
+
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import ru.yandex.practicum.filmorate.controller.FilmController;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.model.Film;
+
+import java.time.LocalDate;
+import java.util.Collection;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class FilmControllerTest {
+    private Validator validator;
+    private FilmController filmController;
+    private Film film;
+
+    @BeforeEach
+    void setUp() {
+        filmController = new FilmController();
+        film = new Film(1L, "The Notebook", "The Notebook is a 2004 American romantic drama film directed by Nick Cassavetes", LocalDate.of(2004, 5, 20), 124L);
+        ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
+        validator = validatorFactory.getValidator();
+    }
+
+    @Test
+    void shouldAddFilm() {
+        Film added = filmController.addFilm(film);
+        assertNotNull(added.getId());
+        assertEquals("The Notebook", added.getName());
+    }
+
+    @Test
+    void shouldNotValidateOldReleaseDate() {
+        film.setReleaseDate(LocalDate.of(1800, 1, 1));
+        Set<ConstraintViolation<Film>> violations = validator.validate(film);
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    void shouldReturnAllFilms() {
+        filmController.addFilm(film);
+        Collection<Film> films = filmController.getFilms();
+        assertEquals(1, films.size());
+    }
+
+    @Test
+    void shouldUpdateExistingFilm() {
+        Film added = filmController.addFilm(film);
+        added.setName("The Notebook 2");
+
+        Film updated = filmController.updateFilm(added);
+        assertEquals("The Notebook 2", updated.getName());
+    }
+
+    @Test
+    void shouldThrowNotFoundExceptionWhenUpdatingNonExistentFilm() {
+        film.setId(999L);
+        NotFoundException ex = assertThrows(NotFoundException.class,
+                () -> filmController.updateFilm(film));
+        assertEquals("Фильм с ID:999 не найден", ex.getMessage());
+    }
+}
