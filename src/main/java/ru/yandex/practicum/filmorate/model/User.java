@@ -3,12 +3,14 @@ import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
 public class User {
 
-    private Long id;
+    private Integer id;
 
     @NotBlank(message = "Email не может быть пустым")
     @Email(message = "Некорректный формат email (должен содержать @)")
@@ -23,4 +25,7 @@ public class User {
     @NotNull(message = "Дата рождения обязательна")
     @PastOrPresent(message = "Дата рождения не может быть в будущем")
     private LocalDate birthday;
+
+    private final Set<User> friends = new HashSet<>();
+
 }
