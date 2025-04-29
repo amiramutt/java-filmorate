@@ -40,28 +40,33 @@ public class UserService {
         User user = userStorage.getUserById(userId);
         User friend = userStorage.getUserById(friendId);
 
-        user.getFriends().add(friend);
-        friend.getFriends().add(user);
+        user.getFriends().add(friendId);
+        friend.getFriends().add(userId);
     }
 
     public void removeFriend(int userId, int friendId) {
         User user = userStorage.getUserById(userId);
         User friend = userStorage.getUserById(friendId);
-        user.getFriends().remove(friend);
-        friend.getFriends().remove(user);
+        user.getFriends().remove(friendId);
+        friend.getFriends().remove(userId);
     }
 
     public Set<User> getFriends(int userId) {
         User user = userStorage.getUserById(userId);
-        return user.getFriends();
+        return user.getFriends().stream()
+                .map(userStorage::getUserById) // Преобразуем ID в объекты User
+                .collect(Collectors.toSet()); // Собираем результат в Set
     }
 
     public List<User> getCommonFriends(int userId1, int userId2) {
-        Set<User> user1Friends = userStorage.getUserById(userId1).getFriends();
-        Set<User> user2Friends = userStorage.getUserById(userId2).getFriends();
-
-        return user1Friends.stream()
+        Set<Integer> user1Friends = userStorage.getUserById(userId1).getFriends();
+        Set<Integer> user2Friends = userStorage.getUserById(userId2).getFriends();
+        List<Integer> commonFriends = user1Friends.stream()
                 .filter(user2Friends::contains)
+                .collect(Collectors.toList());
+
+        return commonFriends.stream()
+                .map(userStorage::getUserById)
                 .collect(Collectors.toList());
     }
 }

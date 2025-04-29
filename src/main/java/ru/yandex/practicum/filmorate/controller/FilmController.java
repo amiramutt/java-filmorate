@@ -39,37 +39,22 @@ public class FilmController {
     }
 
     @PutMapping("/{id}/like/{userId}")
-    private void addLike(@PathVariable int id, @PathVariable int userId) {
+    public void addLike(@PathVariable int id, @PathVariable int userId) {
         filmService.addLike(id, userId);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
-    private void removeLike(@PathVariable int id, @PathVariable int userId) {
+    public void removeLike(@PathVariable int id, @PathVariable int userId) {
         filmService.removeLike(id, userId);
     }
 
     @GetMapping("/popular")
-    private List<Film> getPopularFilms(@RequestParam(defaultValue = "10") int count) {
+    public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") int count) {
         return filmService.getPopularFilms(count);
     }
 
     @GetMapping("/{id}")
-    private Film getFilmById(@PathVariable int id) {
-        log.info("=== START getFilmById(" + id + ") ===");
-        log.info("FilmService instance: " + filmService.getClass().getName());
-        //return filmService.getFilmById(id);
-        try {
-            Film film = filmService.getFilmById(id);
-            log.info("Found film: " + film);
-            return film;
-        } catch (Exception e) {
-            log.error("ERROR in getFilmById: ", e);
-            throw e; // Re-throw to preserve original behavior
-        }
-    }
-
-    @GetMapping("/check-di")
-    public String checkDependencyInjection() {
-        return "FilmService is " + (filmService != null ? "INJECTED" : "NULL");
+    public Film getFilmById(@PathVariable int id) {
+        return filmService.getFilmById(id);
     }
 }
