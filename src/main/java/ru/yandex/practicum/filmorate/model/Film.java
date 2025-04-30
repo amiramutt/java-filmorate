@@ -8,12 +8,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import ru.yandex.practicum.filmorate.annotation.ReleaseDate;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
 public class Film {
 
-    private Long id;
+    private Integer id;
 
     @NotNull
     @NotBlank(message = "Название фильма не может быть пустым")
@@ -28,4 +30,6 @@ public class Film {
 
     @Positive(message = "Продолжительность фильма не может быть отрицательной")
     private long duration;
+
+    private final Set<Integer> likes = new HashSet<>();
 }

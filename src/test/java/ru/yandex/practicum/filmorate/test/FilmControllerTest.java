@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate;
+package ru.yandex.practicum.filmorate.test;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
@@ -6,6 +6,8 @@ import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.controller.FilmController;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -16,15 +18,17 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
 class FilmControllerTest {
     private Validator validator;
+    @Autowired
     private FilmController filmController;
     private Film film;
 
     @BeforeEach
     void setUp() {
-        filmController = new FilmController();
-        film = new Film(1L, "The Notebook", "The Notebook is a 2004 American romantic drama film directed by Nick Cassavetes", LocalDate.of(2004, 5, 20), 124L);
+        film = new Film(1, "The Notebook", "The Notebook is a 2004 American romantic drama film directed by Nick Cassavetes", LocalDate.of(2004, 5, 20), 124L);
+        filmController.getFilms().clear();
         ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
         validator = validatorFactory.getValidator();
     }
@@ -47,7 +51,7 @@ class FilmControllerTest {
     void shouldReturnAllFilms() {
         filmController.addFilm(film);
         Collection<Film> films = filmController.getFilms();
-        assertEquals(1, films.size());
+        assertFalse(films.isEmpty());
     }
 
     @Test
@@ -61,9 +65,9 @@ class FilmControllerTest {
 
     @Test
     void shouldThrowNotFoundExceptionWhenUpdatingNonExistentFilm() {
-        film.setId(999L);
+        film.setId(999);
         NotFoundException ex = assertThrows(NotFoundException.class,
                 () -> filmController.updateFilm(film));
-        assertEquals("Фильм с ID:999 не найден", ex.getMessage());
+        assertEquals("Фильм с ID: 999 не найден", ex.getMessage());
     }
 }

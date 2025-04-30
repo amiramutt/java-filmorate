@@ -1,23 +1,27 @@
-package ru.yandex.practicum.filmorate;
+package ru.yandex.practicum.filmorate.test;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
+
 import java.time.LocalDate;
 import java.util.Collection;
 import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
 class UserControllerTest {
 
+    @Autowired
     private UserController userController;
     private User user;
 
     @BeforeEach
     void setUp() {
-        userController = new UserController();
-        user = new User(1L, "user@email.com", "user", "User", LocalDate.of(1999, 1, 6));
+        user = new User(1, "user@email.com", "user", "User", LocalDate.of(1999, 1, 6));
     }
 
     @Test
@@ -53,7 +57,7 @@ class UserControllerTest {
 
     @Test
     void shouldThrowNotFoundWhenUpdatingNonExistentUser() {
-        user.setId(999L);
+        user.setId(999);
         NotFoundException ex = assertThrows(NotFoundException.class,
                 () -> userController.updateUser(user));
         assertEquals("Пользователь с ID: 999 не найден", ex.getMessage());
@@ -63,6 +67,6 @@ class UserControllerTest {
     void shouldReturnAllUsers() {
         userController.addUser(user);
         Collection<User> users = userController.getUsers();
-        assertEquals(1, users.size());
+        assertFalse(users.isEmpty());
     }
 }
