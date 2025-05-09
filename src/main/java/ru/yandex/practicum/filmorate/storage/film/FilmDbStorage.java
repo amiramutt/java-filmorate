@@ -107,7 +107,7 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Film getFilmById(int id) {
         String query = """
-            SELECT 
+            SELECT
                 m.movie_id,
                 m.name,
                 m.description,
@@ -155,7 +155,7 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public ArrayList<Film> getAllFilms() {
         String query = """
-            SELECT 
+            SELECT
                 m.movie_id,
                 m.name,
                 m.description,
