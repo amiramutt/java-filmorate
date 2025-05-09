@@ -7,7 +7,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.jdbc.Sql;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -57,7 +56,7 @@ class FilmorateApplicationTests {
 		filmStorage.addFilm(interstellar);
 
 		int id = userStorage.getAllUsers().getFirst().getId();
-		userStorage.addFriend(id, id+1);
+		userStorage.addFriend(id, id + 1);
 	}
 
 	@Test
