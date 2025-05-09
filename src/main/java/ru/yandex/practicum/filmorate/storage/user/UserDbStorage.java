@@ -150,7 +150,7 @@ public class UserDbStorage implements UserStorage {
     public Set<Integer> getFriends(int userId) {
         String sql = """
         SELECT followed_user_id
-        FROM friendship 
+        FROM friendship
         WHERE following_user_id = ?
         """;
         return new HashSet<>(jdbc.query(sql, (rs, rowNum) -> rs.getInt("followed_user_id"), userId));

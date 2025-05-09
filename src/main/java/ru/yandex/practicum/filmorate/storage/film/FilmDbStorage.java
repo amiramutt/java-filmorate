@@ -314,7 +314,7 @@ public class FilmDbStorage implements FilmStorage {
 
         String sql = "INSERT INTO movie_genre (movie_id, genre_id) VALUES (?, ?)";
         List<Object[]> batchArgs = genres.stream()
-                .sorted(Comparator.comparing(Genre::getId)) // сортировка по id
+                .sorted(Comparator.comparing(Genre::getId))
                 .map(genre -> new Object[]{movieId, genre.getId()})
                 .collect(Collectors.toList());
 
