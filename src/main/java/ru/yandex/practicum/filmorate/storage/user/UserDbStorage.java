@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -17,12 +16,11 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-@Component("UserDbStorage")
+@Component
 public class UserDbStorage implements UserStorage {
 
     private final JdbcTemplate jdbc;
 
-    @Autowired
     public UserDbStorage(JdbcTemplate jdbc) {
         this.jdbc = jdbc;
     }
@@ -74,15 +72,14 @@ public class UserDbStorage implements UserStorage {
         try {
             User user = jdbc.queryForObject(sql, userRowMapper(), id);
 
-            for (int friendId : getFriends(id)) {
-                user.getFriends().add(friendId);
+            for (User friend : getFriends(id)) {
+                user.getFriends().add(friend.getId());
             }
             return user;
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Пользователь с id=" + id + " не найден");
         }
     }
-
 
     @Override
     public ArrayList<User> getAllUsers() {
@@ -147,13 +144,18 @@ public class UserDbStorage implements UserStorage {
         jdbc.update(updateSql, friendId, userId);
     }
 
-    public Set<Integer> getFriends(int userId) {
+    public Set<User> getFriends(int userId) {
         String sql = """
-        SELECT followed_user_id
-        FROM friendship
-        WHERE following_user_id = ?
+        SELECT f.followed_user_id AS user_id,
+        u.NAME,
+        u.LOGIN,
+        u.EMAIL,
+        u.BIRTHDAY
+        FROM friendship f
+        LEFT JOIN users u on u.user_id = f.followed_user_id
+        WHERE f.following_user_id = ?
         """;
-        return new HashSet<>(jdbc.query(sql, (rs, rowNum) -> rs.getInt("followed_user_id"), userId));
+        return new HashSet<>(jdbc.query(sql, userRowMapper(), userId));
     }
 
     private RowMapper<User> userRowMapper() {

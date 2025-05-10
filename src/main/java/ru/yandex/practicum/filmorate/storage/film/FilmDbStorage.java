@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -20,13 +19,12 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@Component("FilmDbStorage")
+@Component
 public class FilmDbStorage implements FilmStorage {
 
     private final JdbcTemplate jdbc;
     private final FilmRowMapper mapper;
 
-    @Autowired
     public FilmDbStorage(JdbcTemplate jdbc, FilmRowMapper mapper) {
         this.jdbc = jdbc;
         this.mapper = mapper;
@@ -57,15 +55,11 @@ public class FilmDbStorage implements FilmStorage {
         }
         int filmId = key.intValue();
 
-        String genreQuery = "INSERT INTO movie_genre (movie_id, genre_id) VALUES (?, ?)";
-
         Set<Genre> sortedGenres = film.getGenres().stream()
                 .sorted(Comparator.comparing(Genre::getId))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
 
-        for (Genre genre : sortedGenres) {
-            jdbc.update(genreQuery, filmId, getGenreIdIfExists(genre));
-        }
+        insertGenres(filmId, film.getGenres());
         film.setId(filmId);
         film.setGenres(sortedGenres);
         return film;
@@ -315,7 +309,7 @@ public class FilmDbStorage implements FilmStorage {
         String sql = "INSERT INTO movie_genre (movie_id, genre_id) VALUES (?, ?)";
         List<Object[]> batchArgs = genres.stream()
                 .sorted(Comparator.comparing(Genre::getId))
-                .map(genre -> new Object[]{movieId, genre.getId()})
+                .map(genre -> new Object[]{movieId, getGenreIdIfExists(genre)})
                 .collect(Collectors.toList());
 
         jdbc.batchUpdate(sql, batchArgs);

@@ -84,7 +84,7 @@ class FilmorateApplicationTests {
 	@Test
 	void testGetUserFriends() {
 		int id = userStorage.getAllUsers().getFirst().getId();
-		Set<Integer> friends = userStorage.getFriends(id);
+		Set<User> friends = userStorage.getFriends(id);
 		assertThat(friends).hasSize(1);
 	}
 
