@@ -3,4 +3,4 @@
 # java-filmorate
 Template repository for Filmorate project.
 
-![db-schema](./Untitled.png)
+![db-schema](./QuickDBD-export.png)
