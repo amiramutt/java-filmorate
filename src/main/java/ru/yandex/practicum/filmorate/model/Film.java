@@ -6,12 +6,13 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.yandex.practicum.filmorate.annotation.ReleaseDate;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class Film {
 
@@ -31,5 +32,10 @@ public class Film {
     @Positive(message = "Продолжительность фильма не может быть отрицательной")
     private long duration;
 
-    private final Set<Integer> likes = new HashSet<>();
+    private Set<Integer> likes = new HashSet<>();
+
+    private Mpa mpa;
+
+    private Set<Genre> genres = new LinkedHashSet<>();
+
 }

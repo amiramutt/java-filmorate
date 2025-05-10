@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
@@ -15,7 +14,6 @@ public class UserService {
 
     private final UserStorage userStorage;
 
-    @Autowired
     public UserService(UserStorage userStorage) {
         this.userStorage = userStorage;
     }
@@ -37,25 +35,20 @@ public class UserService {
     }
 
     public void addFriend(int userId, int friendId) {
-        User user = userStorage.getUserById(userId);
-        User friend = userStorage.getUserById(friendId);
-
-        user.getFriends().add(friendId);
-        friend.getFriends().add(userId);
+        validateUsersExist(userId, friendId);
+        userStorage.addFriend(userId, friendId);
     }
 
     public void removeFriend(int userId, int friendId) {
-        User user = userStorage.getUserById(userId);
-        User friend = userStorage.getUserById(friendId);
-        user.getFriends().remove(friendId);
-        friend.getFriends().remove(userId);
+        validateUsersExist(userId, friendId);
+        userStorage.removeFriend(userId, friendId);
     }
 
     public Set<User> getFriends(int userId) {
         User user = userStorage.getUserById(userId);
         return user.getFriends().stream()
-                .map(userStorage::getUserById) // Преобразуем ID в объекты User
-                .collect(Collectors.toSet()); // Собираем результат в Set
+                .map(userStorage::getUserById)
+                .collect(Collectors.toSet());
     }
 
     public List<User> getCommonFriends(int userId1, int userId2) {
@@ -68,5 +61,10 @@ public class UserService {
         return commonFriends.stream()
                 .map(userStorage::getUserById)
                 .collect(Collectors.toList());
+    }
+
+    private void validateUsersExist(int userId, int friendId) {
+        userStorage.getUserById(userId);
+        userStorage.getUserById(friendId);
     }
 }
